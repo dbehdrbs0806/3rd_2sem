@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>영화 등록 및 상영시간표 작성</title>
+    <link rel="stylesheet" href="/css/manage_movies.css">
+</head>
+<body>
+<header>
+    <div class="header-left">
+        <h1 class="admin-title">영화 등록 및 상영시간표 작성</h1>
+    </div>
+    <div class="header-right">
+        <button onclick="location.href='/admin'">관리자 페이지로</button>
+    </div>
+</header>
+<main>
+    <!-- 영화 등록 섹션 -->
+    <section class="movie-registration">
+        <h2>영화 등록</h2>
+        <form id="movie-form">
+            <label for="movie-title">영화 제목</label>
+            <input type="text" id="movie-title" name="title" placeholder="영화 제목 입력" required>
+
+            <label for="movie-id">영화 번호</label>
+            <input type="text" id="movie-id" name="movieId" placeholder="영화 번호 입력" required>
+
+            <label for="movie-genre">장르</label>
+            <input type="text" id="movie-genre" name="genre" placeholder="장르 입력" required>
+
+            <label for="movie-director">감독</label>
+            <input type="text" id="movie-director" name="director" placeholder="감독 이름 입력" required>
+
+            <label for="movie-actors">주연 배우</label>
+            <input type="text" id="movie-actors" name="leadActor" placeholder="주연 배우 이름 입력 (쉼표로 구분)" required>
+
+            <label for="movie-poster">포스터 이미지</label>
+            <input type="file" id="movie-poster" name="poster" accept="image/*" required>
+            <img id="poster-preview" alt="포스터 미리보기" style="display:none; max-width: 100px; margin-top: 10px;">
+
+            <button type="submit">영화 등록</button>
+        </form>
+    </section>
+
+    <!-- 상영시간표 작성 섹션 -->
+    <section class="schedule-creation">
+        <h2>상영 시간표 작성</h2>
+        <form id="schedule-form">
+            <label for="movie-select">영화 선택</label>
+            <select id="movie-select" name="movieId" required>
+                <option value="" disabled selected>등록된 영화를 선택하세요</option>
+                <!-- 서버에서 영화 목록을 동적으로 추가 -->
+            </select>
+
+            <label for="screen-date">상영 날짜</label>
+            <input type="date" id="screen-date" name="date" required>
+
+            <label for="screen-time">상영 시간</label>
+            <input type="time" id="screen-time" name="time" required>
+
+            <label for="screen-hall">상영관</label>
+            <select id="screen-hall" name="hall" required>
+                <option value="1">1관</option>
+                <option value="2">2관</option>
+                <option value="3">3관</option>
+            </select>
+
+            <label for="screen-price">가격</label>
+            <input type="number" id="screen-price" name="price" placeholder="가격 입력 (예: 15000)" required>
+
+            <button type="submit">시간표 저장</button>
+        </form>
+    </section>
+
+    <section class="schedule-overview">
+        <h2>상영 시간표</h2>
+        <div id="schedule-box">
+            <!-- 시간표 정보가 동적으로 추가될 영역 -->
+        </div>
+    </section>
+</main>
+<script src="/js/manage_movies.js"></script>
+</body>
+</html>

@@ -1,0 +1,109 @@
+/* 기본 설정 */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+    background-color: #e8f5e9; /* 연한 초록색 배경 */
+    color: #2e7d32; /* 진한 초록색 텍스트 */
+}
+
+/* 상단 헤더 스타일 */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #43a047; /* 진한 초록색 */
+    color: white;
+    padding: 10px 20px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+header .website-name {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin: 0;
+}
+
+header button {
+    background-color: #2e7d32;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+header button:hover {
+    background-color: #1b5e20;
+}
+
+/* 영화 섹션 스타일 */
+.movie-list {
+    margin: 20px 0;
+    padding: 0 20px;
+}
+
+.movie-list h2 {
+    font-size: 1.5rem;
+    color: #2e7d32;
+    margin-bottom: 10px;
+}
+
+/* 장르별 행 스타일 */
+.genre-row {
+    display: flex;
+    gap: 60px; /* 카드 간격 */
+
+    padding-bottom: 10px;
+}
+
+/* 영화 카드 스타일 */
+.movie-card {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    text-align: center;
+
+    width: 240px; /* 카드 너비 확대 */
+    flex: 0 0 auto; /* 가로 배열 */
+    display: flex; /* 중앙 정렬을 위해 flexbox 사용 */
+    flex-direction: column; /* 위아래 정렬 */
+    align-items: center; /* 수평 중앙 정렬 */
+    justify-content: center; /* 수직 중앙 정렬 */
+
+    margin: 40px 0;
+}
+
+.movie-card img {
+    width: 110%;
+    height: auto;
+    border-radius: 10px;
+    margin-bottom: 15px;
+
+    object-fit: cover; /* 이미지가 카드 크기에 맞게 잘림 */
+    display: block;
+}
+
+.movie-card h3 {
+    font-size: 1.4rem;
+    margin: 10px 0;
+    color: #2e7d32;
+}
+
+.movie-card button {
+    background-color: #43a047;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.movie-card button:hover {
+    background-color: #1b5e20;
+}

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main Page</title>
+    <link rel="stylesheet" href="/css/index.css">
+    <script src="/js/index.js" defer></script>
+    <!-- head 에서 css, js를 지정 및 UTF-8 지정 -->
+</head>
+<body>
+<!-- 상단바 -->
+<header>
+    <div class="header-left">
+        <h1 class="website-name">YDG_Cinema</h1>
+    </div>
+    <div class="header-right">
+        <div class="login-box">
+            <h2>Login</h2>
+            <form id="login-form">
+                <label for="username">ID</label>
+                <input type="text" id="username" name="username" placeholder="아이디 입력" required>
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="비밀번호 입력" required>
+                <button type="submit">Login</button>
+            </form>
+            <div class="signup-link">
+                <a href="/signup">회원가입</a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- 메인 콘텐츠 영역 -->
+<main>
+    <div class="welcome-section">
+        <h1>Welcome to YDG_Cinema</h1>
+        <p>로그인하거나 회원가입하여 영화 예매를 시작하세요!</p>
+    </div>
+</main>
+</body>
+</html>

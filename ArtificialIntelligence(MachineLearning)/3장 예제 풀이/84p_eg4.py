@@ -63,3 +63,4 @@ for w0_init, w1_init in initial_weights:
     plt.grid(True)
     plt.legend()
     plt.show()
+# %%

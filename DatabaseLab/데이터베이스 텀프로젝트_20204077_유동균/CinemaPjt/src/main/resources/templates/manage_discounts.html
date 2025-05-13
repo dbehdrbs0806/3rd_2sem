@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>회원 등급 관리</title>
+  <link rel="stylesheet" href="/css/manage_discounts.css">
+</head>
+<body>
+<header>
+  <h1 class="admin-title">회원 등급별 관리</h1>
+  <button onclick="location.href='/admin'">돌아가기</button>
+</header>
+<main>
+  <section class="grade-management">
+    <!-- VIP 관리 -->
+    <div class="grade-card">
+      <div class="grade-icon vip-icon">VIP</div>
+      <div class="grade-input">
+        <label for="vip-discount">할인율 (%)</label>
+        <input type="number" id="vip-discount" placeholder="현재 할인율 유지">
+      </div>
+    </div>
+    <!-- Gold 관리 -->
+    <div class="grade-card">
+      <div class="grade-icon gold-icon">Gold</div>
+      <div class="grade-input">
+        <label for="gold-discount">할인율 (%)</label>
+        <input type="number" id="gold-discount" placeholder="현재 할인율 유지">
+      </div>
+    </div>
+    <!-- Silver 관리 -->
+    <div class="grade-card">
+      <div class="grade-icon silver-icon">Silver</div>
+      <div class="grade-input">
+        <label for="silver-discount">할인율 (%)</label>
+        <input type="number" id="silver-discount" placeholder="현재 할인율 유지">
+      </div>
+    </div>
+  </section>
+  <!-- 변경 버튼 -->
+  <button id="update-discounts">변경</button>
+</main>
+<script src="/js/manage_discounts.js"></script>
+</body>
+</html>

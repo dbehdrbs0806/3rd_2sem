@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YDG Cinema</title>
+    <!-- CSS 파일 링크 -->
+    <link rel="stylesheet" href="/css/movies.css">
+</head>
+<body>
+<header>
+    <div class="header-left">
+        <h1 class="website-name">YDG Cinema</h1>
+    </div>
+    <div class="header-right">
+        <!-- 회원정보 수정 버튼 -->
+        <button onclick="location.href='/edit'">회원정보 수정</button>
+        <button onclick="location.href='/check'">예약내용 확인</button>
+    </div>
+</header>
+<main>
+    <!-- 현재 상영 중인 영화 섹션 -->
+    <section class="movie-list">
+        <h2>현재 상영 중인 영화</h2>
+        <div id="movies-container" class="genre-row">
+            <!-- JavaScript를 통해 동적으로 영화 카드가 추가됩니다 -->
+        </div>
+    </section>
+
+    <!-- 상영 예정 영화 섹션 -->
+    <section class="movie-list">
+        <h2>상영 예정 중인 영화</h2>
+        <div id="upcoming-movies" class="genre-row">
+            <!-- 장르별 영화 목록이 JavaScript를 통해 동적으로 추가됩니다 -->
+        </div>
+    </section>
+</main>
+
+<!-- JavaScript 파일 링크 -->
+<script src="/js/movies.js"></script>
+</body>
+</html>

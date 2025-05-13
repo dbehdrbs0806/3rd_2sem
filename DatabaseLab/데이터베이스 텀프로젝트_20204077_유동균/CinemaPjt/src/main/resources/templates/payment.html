@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>결제 페이지 - YDG Cinema</title>
+    <link rel="stylesheet" href="/css/payment.css">
+</head>
+<body>
+<header>
+    <div class="header-left">
+        <h1 class="website-name">YDG Cinema</h1>
+    </div>
+    <div class="header-right">
+        <button class="back-button">뒤로가기</button>
+    </div>
+</header>
+
+<main>
+    <section class="payment-section">
+        <h2>결제 페이지</h2>
+        <div id="movie-info">
+            <h3>영화 정보</h3>
+            <p>영화 번호: <span id="movie-id">미정</span></p>
+            <p>상영 시간: <span id="show-time">미정</span></p>
+            <p>상영관 번호: <span id="theater-id">미정</span></p>
+            <p>좌석 정보: <span id="seat-info">미정</span></p>
+        </div>
+
+        <div id="member-info">
+            <h3>회원 정보</h3>
+            <p>회원 이름: <span id="member-name">미정</span></p>
+            <p>등급: <span id="member-grade">미정</span></p>
+            <p>카드 번호: <span id="member-card">미정</span></p>
+        </div>
+
+        <!-- 결제 버튼 추가 -->
+        <div class="payment-button-section">
+            <button id="payment-button">결제하기</button>
+        </div>
+
+
+    </section>
+</main>
+
+<script src="/js/payment.js"></script>
+</body>
+</html>

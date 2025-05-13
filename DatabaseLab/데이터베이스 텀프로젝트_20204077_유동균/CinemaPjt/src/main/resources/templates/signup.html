@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <link rel="stylesheet" href="/css/signup.css">
+    <script src="/js/signup.js" defer></script>
+</head>
+<body>
+<header>
+    <h1 class="website-name">회원가입</h1>
+</header>
+<main>
+    <div class="signup-box">
+        <h2>회원가입</h2>
+        <form id="signup-form">
+            <!-- 회원번호 (아이디) -->
+            <label for="username">아이디</label>
+            <input type="text" id="username" name="username" placeholder="아이디 입력" required>
+
+            <!-- 비밀번호 -->
+            <label for="password">비밀번호</label>
+            <input type="password" id="password" name="password" placeholder="비밀번호 입력" required>
+
+            <!-- 비밀번호 확인 -->
+            <label for="confirm-password">비밀번호 확인</label>
+            <input type="password" id="confirm-password" name="confirm-password" placeholder="비밀번호 재입력" required>
+            <span id="password-error" class="error-message"></span>
+
+            <!-- 회원 이름 -->
+            <label for="name">회원 이름</label>
+            <input type="text" id="name" name="name" placeholder="이름 입력" required>
+
+            <!-- 휴대전화 -->
+            <label for="phone">휴대전화</label>
+            <input type="text" id="phone" name="phone" placeholder="010-1234-5678" required>
+
+            <!-- 카드번호 -->
+            <label for="card-number">카드번호</label>
+            <input type="text" id="card-number" name="card-number" placeholder="카드번호 입력" required>
+
+            <button type="submit">회원가입</button>
+        </form>
+    </div>
+</main>
+</body>
+</html>

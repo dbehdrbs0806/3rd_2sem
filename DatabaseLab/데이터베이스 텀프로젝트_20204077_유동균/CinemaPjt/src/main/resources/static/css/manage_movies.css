@@ -1,0 +1,163 @@
+/* 기본 스타일 */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+    background-color: #f8f9fa;
+    color: #333;
+}
+
+/* 헤더 스타일 */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background-color: #212121;
+    color: white;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+header .admin-title {
+    font-size: 1.8rem;
+    margin: 0;
+}
+
+header button {
+    background-color: #333;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+header button:hover {
+    background-color: #555;
+}
+
+/* 메인 섹션 */
+main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px;
+    gap: 20px;
+}
+
+/* 영화 등록 섹션 */
+.movie-registration, .schedule-creation, .schedule-overview {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    width: 100%;
+    max-width: 600px;
+}
+
+.movie-registration h2, .schedule-creation h2, .schedule-overview h2 {
+    margin-top: 0;
+    color: #212121;
+}
+
+/* 폼 요소 스타일 */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+label {
+    font-weight: bold;
+}
+
+input, select {
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+button {
+    background-color: #4caf50;
+    color: white;
+    padding: 15px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+/* 상영 시간표 섹션 스타일 */
+.schedule-overview {
+    background-color: #ffcc80; /* 연한 오렌지색 */
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 600px;
+}
+
+.schedule-overview h2 {
+    margin-top: 0;
+    color: #d35400; /* 진한 오렌지색 */
+}
+
+/* 시간표 박스 스타일 */
+#schedule-box {
+    display: flex;
+    flex-wrap: wrap; /* 여러 줄로 나눠 표시 */
+    gap: 10px; /* 아이템 간 간격 */
+    padding: 10px;
+    border: 1px solid #ffa726; /* 중간 오렌지색 */
+    border-radius: 5px;
+    background-color: #fff8e1; /* 연한 노란색 */
+    overflow-y: auto; /* 스크롤 허용 */
+    max-height: 200px; /* 작은 박스 크기 */
+}
+
+.schedule-item {
+    flex: 1 1 calc(50% - 10px); /* 한 줄에 두 개씩 배치 */
+    background-color: #ffe0b2; /* 연한 오렌지색 */
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-size: 0.9rem;
+    color: #333;
+}
+
+.schedule-item h3 {
+    margin: 0;
+    color: #e65100; /* 진한 오렌지 */
+    font-size: 1rem;
+}
+
+.schedule-item p {
+    margin: 5px 0 0;
+    font-size: 0.85rem;
+}
+
+/* 삭제 버튼 스타일 */
+.delete-button {
+    background-color: #e74c3c; /* 빨간색 */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    margin-left: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.delete-button:hover {
+    background-color: #c0392b;
+}

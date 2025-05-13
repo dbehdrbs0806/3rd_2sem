@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>관리자 페이지</title>
+    <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+<header>
+    <div class="header-left">
+        <h1 class="admin-title">관리자 페이지</h1>
+    </div>
+    <div class="header-right">
+        <button onclick="location.href='/'">홈으로</button>
+    </div>
+</header>
+<main>
+    <section class="admin-feature">
+        <h2>회원 등록 승인 및 등급 부여</h2>
+        <button onclick="location.href='/admin/approve_users'">회원 승인 관리</button>
+    </section>
+    <section class="admin-feature">
+        <h2>회원 등급별 할인율 관리</h2>
+        <button onclick="location.href='/admin/manage_discounts'">할인율 관리</button>
+    </section>
+    <section class="admin-feature">
+        <h2>영화 등록 및 상영시간표 작성</h2>
+        <button onclick="location.href='/admin/manage_movies'">영화 등록 및 시간표 작성</button>
+    </section>
+</main>
+</body>
+</html>

@@ -1,0 +1,95 @@
+/* 기본 설정 */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+    background-color: #f0f0f0; /* 연한 회색 배경 */
+    color: #333; /* 진한 회색 텍스트 */
+}
+
+/* 상단 헤더 */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #212121; /* 검은색 배경 */
+    color: white;
+    padding: 15px 20px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2); /* 헤더 그림자 */
+}
+
+.admin-title {
+    font-size: 2rem; /* 제목 크기 */
+    font-weight: bold;
+    margin: 0;
+    letter-spacing: 1.5px; /* 글자 간격 */
+}
+
+header button {
+    background-color: #333; /* 진한 회색 */
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+header button:hover {
+    background-color: #555; /* 더 밝은 회색 */
+}
+
+/* 메인 섹션 */
+main {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px; /* 섹션 간 간격 */
+}
+
+.admin-feature {
+    background-color: white; /* 흰색 배경 */
+    border-radius: 10px; /* 둥근 모서리 */
+    box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.1); /* 그림자 */
+    padding: 20px;
+    text-align: center;
+}
+
+.admin-feature h2 {
+    font-size: 1.5rem;
+    color: #212121; /* 검은색 텍스트 */
+    margin-bottom: 15px;
+}
+
+.admin-feature button {
+    background-color: #333; /* 진한 회색 */
+    color: white;
+    padding: 12px 20px;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.admin-feature button:hover {
+    background-color: #555; /* 더 밝은 회색 */
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    main {
+        gap: 20px;
+    }
+
+    .admin-feature h2 {
+        font-size: 1.3rem;
+    }
+
+    .admin-feature button {
+        font-size: 0.9rem;
+        padding: 10px 15px;
+    }
+}

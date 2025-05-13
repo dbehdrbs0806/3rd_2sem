@@ -1,0 +1,136 @@
+/* 기본 설정 */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+/* 헤더 스타일 */
+header {
+    text-align: center;
+    padding: 20px;
+    background-color: #212121;
+    color: white;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+    position: relative; /* 버튼 배치를 위한 상대 위치 설정 */
+}
+
+header button {
+    position: absolute; /* 버튼 절대 위치 */
+    top: 50%; /* 헤더 높이의 중앙 */
+    right: 20px; /* 오른쪽 여백 */
+    transform: translateY(-50%); /* 수직 중앙 정렬 */
+    background-color: #333; /* 진한 회색 */
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+header button:hover {
+    background-color: #555; /* 더 밝은 회색 */
+}
+
+.admin-title {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin: 0;
+}
+
+/* 메인 섹션 */
+main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px;
+    gap: 20px;
+}
+
+/* 등급 관리 섹션 */
+.grade-management {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    width: 100%;
+    max-width: 800px;
+}
+
+/* 각 등급 카드 */
+.grade-card {
+    flex: 1;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    text-align: center;
+}
+
+.grade-icon {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: white;
+    padding: 15px 0;
+    border-radius: 5px;
+    margin-bottom: 15px;
+}
+
+.vip-icon {
+    background-color: #ff5722; /* 주황색 */
+}
+
+.gold-icon {
+    background-color: #ffc107; /* 금색 */
+}
+
+.silver-icon {
+    background-color: #9e9e9e; /* 은색 */
+}
+
+/* 입력 필드 */
+.grade-input {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+}
+
+.grade-input label {
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+.grade-input input {
+    width: 80%;
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    text-align: center;
+    transition: border-color 0.3s ease;
+}
+
+.grade-input input:focus {
+    border-color: #333;
+}
+
+/* 변경 버튼 */
+#update-discounts {
+    background-color: #4caf50; /* 녹색 */
+    color: white;
+    padding: 15px 30px;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#update-discounts:hover {
+    background-color: #45a049; /* 밝은 녹색 */
+}

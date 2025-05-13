@@ -1,0 +1,969 @@
+연습문제
+
+SQL>CREATE OR REPLACE TRIGGER trace_dept
+  2      BEFORE UPDATE ON dept
+  3      FOR EACH ROW
+  4      WHEN (new.DNAME != old.DNAME)
+  5  BEGIN
+  6  DBMS_OUTPUT.PUT_LINE('변경 전 부서명 : ' || :old.DNAME);
+  7  DBMS_OUTPUT.PUT_LINE('변경 후 부서명 : ' || :new.DNAME);
+  8  END;
+  9  /
+
+트리거가 생성되었습니다.
+
+SQL>create table customer (
+  2      c_no    number(3),
+  3      c_name  varchar2(10),
+  4      purchase_count  number(5),
+  5      constraint customer_pk primary key (c_no));
+
+테이블이 생성되었습니다.
+
+SQL>create table goods (
+  2      g_no    number(3),
+  3      g_name  varchar2(10),
+  4      inventory  number(3),
+  5      constraint goods_pk primary key (g_no));
+
+테이블이 생성되었습니다.
+
+SQL>
+SQL>create table purchase (
+  2      purchase_no number(3),
+  3      c_no    number(3),
+  4      g_no    number(3),
+  5      amount number(3),
+  6      purchase_date date,
+  7      constraint purchase_pk primary key (purchase_no),
+  8      constraint rent_fk1 foreign key (c_no) references customer(c_no),
+  9      constraint rent_fk2 foreign key (g_no) references goods(g_no));
+
+테이블이 생성되었습니다.
+
+SQL>
+SQL>insert into customer values(101,'홍길동',0);
+
+1 개의 행이 만들어졌습니다.
+
+SQL>insert into customer values(102,'일지매',0);
+
+1 개의 행이 만들어졌습니다.
+
+SQL>insert into customer values(103,'임꺽정',0);
+
+1 개의 행이 만들어졌습니다.
+
+SQL>
+SQL>insert into goods values(501,'지우개', 100);
+
+1 개의 행이 만들어졌습니다.
+
+SQL>insert into goods values(502,'연필', 200);
+
+1 개의 행이 만들어졌습니다.
+
+SQL>insert into goods values(503,'노트', 150);
+
+1 개의 행이 만들어졌습니다.
+
+SQL>
+SQL>
+SQL>select * from customer;
+
+      C_NO C_NAME     PURCHASE_COUNT                                                                                    
+---------- ---------- --------------                                                                                    
+       101 홍길동                  0                                                                                    
+       102 일지매                  0                                                                                    
+       103 임꺽정                  0                                                                                    
+
+SQL>select * from goods;
+
+      G_NO G_NAME      INVENTORY                                                                                        
+---------- ---------- ----------                                                                                        
+       501 지우개            100                                                                                        
+       502 연필              200                                                                                        
+       503 노트              150                                                                                        
+
+SQL>select * from purchase;
+
+선택된 레코드가 없습니다.
+
+SQL>CREATE OR REPLACE TRIGGER purchase_trigger
+  2  BEFORE INSERT ON purchase
+  3  FOR EACH ROW
+  4  DECLARE
+  5      v_purchase_no NUMBER;
+  6  BEGIN
+  7      SELECT purchase_no.NEXTVAL INTO v_purchase_no FROM dual;
+  8  
+  9      :NEW.purchase_no := v_purchase_no;
+ 10  
+ 11      UPDATE customer
+ 12      SET purchase_count = purchase_count + 1
+ 13      WHERE c_no = :NEW.c_no;
+ 14  
+ 15      UPDATE goods
+ 16      SET inventory = inventory - :NEW.amount
+ 17      WHERE g_no = :NEW.g_no;
+ 18  
+ 19      :NEW.purchase_date := SYSTIMESTAMP;
+ 20  END;
+ 21  /
+
+경고: 컴파일 오류와 함께 트리거가 생성되었습니다.
+
+SQL>CREATE SEQUENCE purchase_no
+  2     INCREMENT BY 1
+  3     START WITH 1
+  4     MAXVALUE 100
+  5     NOCYCLE
+  6     NOCACHE;
+
+시퀀스가 생성되었습니다.
+
+SQL>insert into purchase(purchase_no, c_no, g_no, purchase_date, amount) values(purchase_no.NEXTVAL, 101, 501, SYSDATE, 10);
+
+1 개의 행이 만들어졌습니다.
+
+SQL>insert into purchase(purchase_no, c_no, g_no, purchase_date, amount) values(purchase_no.NEXTVAL, 101, 502, SYSDATE, 10);
+
+1 개의 행이 만들어졌습니다.
+
+SQL>insert into purchase(purchase_no, c_no, g_no, purchase_date, amount) values(purchase_no.NEXTVAL, 101, 503, SYSDATE, 10);
+
+1 개의 행이 만들어졌습니다.
+
+SQL>insert into purchase(purchase_no, c_no, g_no, purchase_date, amount) values(purchase_no.NEXTVAL, 102, 501, SYSDATE, 20);
+
+1 개의 행이 만들어졌습니다.
+
+SQL>insert into purchase(purchase_no, c_no, g_no, purchase_date, amount) values(purchase_no.NEXTVAL, 103, 502, SYSDATE, 30);
+
+1 개의 행이 만들어졌습니다.
+
+SQL>select * from purchase;
+
+PURCHASE_NO       C_NO       G_NO     AMOUNT PURCHASE                                                                   
+----------- ---------- ---------- ---------- --------                                                                   
+          3        101        501         10 23/11/22                                                                   
+          5        101        502         10 23/11/22                                                                   
+          7        101        503         10 23/11/22                                                                   
+          9        102        501         20 23/11/22                                                                   
+         11        103        502         30 23/11/22                                                                   
+
+SQL>select * from goods;
+
+      G_NO G_NAME      INVENTORY                                                                                        
+---------- ---------- ----------                                                                                        
+       501 지우개             70                                                                                        
+       502 연필              160                                                                                        
+       503 노트              140                                                                                        
+
+SQL>select * from customer;
+
+      C_NO C_NAME     PURCHASE_COUNT                                                                                    
+---------- ---------- --------------                                                                                    
+       101 홍길동                  3                                                                                    
+       102 일지매                  1                                                                                    
+       103 임꺽정                  1                                                                                    
+
+
+ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+SYSTEM>CREATE USER lee identified by lee DEFAULT TABLESPACE student;
+
+사용자가 생성되었습니다.
+
+SYSTEM>CREATE USER kim identified by kim DEFAULT TABLESPACE student;
+
+사용자가 생성되었습니다.
+
+SYSTEM>grant connect, resource to lee;
+
+권한이 부여되었습니다.
+
+SYSTEM>grant connect, resource to kim;
+
+권한이 부여되었습니다.
+
+SYSTEM>grant create role to scott with admin option;
+
+권한이 부여되었습니다.
+
+SYSTEM>grant create rolo to LeeInGyu with admin option;
+grant create rolo to LeeInGyu with admin option
+      *
+1행에 오류:
+ORA-00990: 권한이 부적합합니다 
+
+
+SYSTEM>grant connect, resource to LeeInGyu;
+
+권한이 부여되었습니다.
+
+SYSTEM>conn scott
+ERROR:
+ORA-01017: invalid username/password; logon denied 
+
+
+경고: 이제는 ORACLE에 연결되어 있지 않습니다.
+>conn scott/123456
+연결되었습니다.
+SCOTT>grant update(loc) on dept to lee with grant option;
+
+권한이 부여되었습니다.
+
+SCOTT>grant select on dept to lee with grant option;
+
+권한이 부여되었습니다.
+
+SCOTT>conn lee/lee;
+연결되었습니다.
+SQL>update scott.dept set loc='SEOUL' where deptno=10;
+
+1 행이 갱신되었습니다.
+
+SQL>select * from scott.dept;
+
+    DEPTNO DNAME          LOC            EMPLOYEES                                                                      
+---------- -------------- ------------- ----------                                                                      
+        10 ACCOUNTING     SEOUL                  3                                                                      
+        20 RESEARCH       DALLAS                 5                                                                      
+        30 SALES          CHICAGO                6                                                                      
+        40 OPERATIONS     BOSTON                 0                                                                      
+        50 FACTORY        LA                     0                                                                      
+        50 MIS            BOSTON                 0                                                                      
+
+6 개의 행이 선택되었습니다.
+
+SQL>grant update(loc) on scott.dept  to kim;
+
+권한이 부여되었습니다.
+
+SQL>grant select on scott.dept to kim;
+
+권한이 부여되었습니다.
+
+SQL>conn kim/kim
+연결되었습니다.
+KIM>update scott.dept set loc='NEW YORK' where deptno=10;
+
+1 행이 갱신되었습니다.
+
+KIM>select * from scott.dept;
+
+    DEPTNO DNAME          LOC            EMPLOYEES                                                                      
+---------- -------------- ------------- ----------                                                                      
+        10 ACCOUNTING     NEW YORK               3                                                                      
+        20 RESEARCH       DALLAS                 5                                                                      
+        30 SALES          CHICAGO                6                                                                      
+        40 OPERATIONS     BOSTON                 0                                                                      
+        50 FACTORY        LA                     0                                                                      
+        50 MIS            BOSTON                 0                                                                      
+
+6 개의 행이 선택되었습니다.
+
+KIM>conn scott/tiger
+ERROR:
+ORA-01017: invalid username/password; logon denied 
+
+
+경고: 이제는 ORACLE에 연결되어 있지 않습니다.
+>revoke update on emp from lee;
+SP2-0640: 연결되지 않았습니다.
+>revoke update on emp from lee;
+SP2-0640: 연결되지 않았습니다.
+>conn scott/123456
+연결되었습니다.
+SCOTT>revoke update on emp from lee;
+revoke update on emp from lee
+*
+1행에 오류:
+ORA-01927: 허가하지 않은 권한을 REVOKE할 수 없습니다 
+
+
+SCOTT>revoke update on emp from lee;
+revoke update on emp from lee
+*
+1행에 오류:
+ORA-01927: 허가하지 않은 권한을 REVOKE할 수 없습니다 
+
+
+SCOTT>conn lee/lee
+연결되었습니다.
+SQL>revoke update on emp from lee;
+revoke update on emp from lee
+                 *
+1행에 오류:
+ORA-00942: 테이블 또는 뷰가 존재하지 않습니다 
+
+
+SQL>revoke update on emp from lee;
+revoke update on emp from lee
+                 *
+1행에 오류:
+ORA-00942: 테이블 또는 뷰가 존재하지 않습니다 
+
+
+SQL>conn scott/123456
+연결되었습니다.
+SCOTT>create role customer;
+
+롤이 생성되었습니다.
+
+SCOTT>grant select, update(sal) on emp to customer;
+
+권한이 부여되었습니다.
+
+SCOTT>grant customer to lee  with admin option;
+
+권한이 부여되었습니다.
+
+SCOTT>grant select on emp to kim;
+
+권한이 부여되었습니다.
+
+SCOTT>conn lee/lee
+연결되었습니다.
+SQL>select * from scott.emp;
+
+     EMPNO ENAME      JOB              MGR HIREDATE        SAL       COMM     DEPTNO                                    
+---------- ---------- --------- ---------- -------- ---------- ---------- ----------                                    
+      7369 SMITH      CLERK           7902 80/12/17        800                    20                                    
+      7499 ALLEN      SALESMAN        7698 81/02/20       1600        300         30                                    
+      7521 WARD       SALESMAN        7698 81/02/22       1250        500         30                                    
+      7566 JONES      MANAGER         7839 81/04/02       2975                    20                                    
+      7654 MARTIN     SALESMAN        7698 81/09/28       1250       1400         30                                    
+      7698 BLAKE      MANAGER         7839 81/05/01       2850                    30                                    
+      7782 CLARK      MANAGER         7839 81/09/09       2450                    10                                    
+      7788 SCOTT      ANALYST         7566 82/12/09       3000                    20                                    
+      7839 KING       PRESIDENT            81/11/17       5000                    10                                    
+      7844 TURNER     SALESMAN        7698 81/09/08       1500          0         30                                    
+      7876 ADAMS      CLERK           7788 83/01/12       1100                    20                                    
+      7900 JAMES      CLERK           7698 81/12/03        950                    30                                    
+      7902 FORD       ANALYST         7566 81/12/03       3000                    20                                    
+      7934 MILLER     CLERK           7782 82/01/23       1300                    10                                    
+
+14 개의 행이 선택되었습니다.
+
+SQL>update scott.emp set sal=sal+50 where empno=7369;
+
+1 행이 갱신되었습니다.
+
+SQL>conn kim/kim
+연결되었습니다.
+KIM>select * from scott.emp;
+
+     EMPNO ENAME      JOB              MGR HIREDATE        SAL       COMM     DEPTNO                                    
+---------- ---------- --------- ---------- -------- ---------- ---------- ----------                                    
+      7369 SMITH      CLERK           7902 80/12/17        850                    20                                    
+      7499 ALLEN      SALESMAN        7698 81/02/20       1600        300         30                                    
+      7521 WARD       SALESMAN        7698 81/02/22       1250        500         30                                    
+      7566 JONES      MANAGER         7839 81/04/02       2975                    20                                    
+      7654 MARTIN     SALESMAN        7698 81/09/28       1250       1400         30                                    
+      7698 BLAKE      MANAGER         7839 81/05/01       2850                    30                                    
+      7782 CLARK      MANAGER         7839 81/09/09       2450                    10                                    
+      7788 SCOTT      ANALYST         7566 82/12/09       3000                    20                                    
+      7839 KING       PRESIDENT            81/11/17       5000                    10                                    
+      7844 TURNER     SALESMAN        7698 81/09/08       1500          0         30                                    
+      7876 ADAMS      CLERK           7788 83/01/12       1100                    20                                    
+      7900 JAMES      CLERK           7698 81/12/03        950                    30                                    
+      7902 FORD       ANALYST         7566 81/12/03       3000                    20                                    
+      7934 MILLER     CLERK           7782 82/01/23       1300                    10                                    
+
+14 개의 행이 선택되었습니다.
+
+KIM>update scott.emp set sal=sal+50 where empno=7369;
+update scott.emp set sal=sal+50 where empno=7369
+             *
+1행에 오류:
+ORA-01031: 권한이 불충분합니다 
+
+
+KIM>
+KIM>conn lee/lee
+연결되었습니다.
+SQL>update scott.emp set sal=sal+50 where empno=7369;
+
+1 행이 갱신되었습니다.
+
+SQL>
+SQL>conn kim/kim
+연결되었습니다.
+KIM>update scott.emp set sal=sal+50 where empno=7369;
+update scott.emp set sal=sal+50 where empno=7369
+             *
+1행에 오류:
+ORA-01031: 권한이 불충분합니다 
+
+
+KIM>conn scott/123456
+연결되었습니다.
+SCOTT>drop role customer;
+
+롤이 삭제되었습니다.
+
+SCOTT>conn lee/lee
+연결되었습니다.
+SQL>select * from scott.emp;
+select * from scott.emp
+                    *
+1행에 오류:
+ORA-00942: 테이블 또는 뷰가 존재하지 않습니다 
+
+
+SQL>update scott.emp set sal=sal+50 where empno=7369;
+update scott.emp set sal=sal+50 where empno=7369
+             *
+1행에 오류:
+ORA-00942: 테이블 또는 뷰가 존재하지 않습니다 
+
+
+SQL>conn kim/kim
+연결되었습니다.
+KIM>select * from scott.emp;;
+select * from scott.emp;
+                       *
+1행에 오류:
+ORA-00911: 문자가 부적합합니다 
+
+
+KIM>conn scott/tiger
+ERROR:
+ORA-01017: invalid username/password; logon denied 
+
+
+경고: 이제는 ORACLE에 연결되어 있지 않습니다.
+>revoke all on emp from kiim;
+SP2-0640: 연결되지 않았습니다.
+>
+>scott/123456
+SP2-0734: "scott/1234..."(으)로 시작되는 알 수 없는 명령 - 나머지 줄은 무시되었습니다.
+>conn scott/123456
+연결되었습니다.
+SCOTT>revoke all on emp from kim;
+
+권한이 취소되었습니다.
+
+SCOTT>conn system/123456
+연결되었습니다.
+SYSTEM>grant select any table to scott with admin option;
+
+권한이 부여되었습니다.
+
+SYSTEM>conn LeeInGyu/123123
+연결되었습니다.
+SQL>CREATE TABLE update_count
+  2          (count  NUMBER(3));
+
+테이블이 생성되었습니다.
+
+SQL>INSERT INTO update_count VALUES (0);
+
+1 개의 행이 만들어졌습니다.
+
+SQL>CREATE or REPLACE TRIGGER emp_update
+  2   BEFORE update ON emp
+  3  BEGIN
+  4  update update_count set count=count+1;
+  5  END;
+  6  /
+
+트리거가 생성되었습니다.
+
+SQL>
+SQL>update emp set sal=sal+100 where empno=7369;
+
+1 행이 갱신되었습니다.
+
+SQL>select * from update_count;
+
+     COUNT                                                                                                              
+----------                                                                                                              
+         1                                                                                                              
+
+SQL>select * from update_count;
+
+     COUNT                                                                                                              
+----------                                                                                                              
+         1                                                                                                              
+
+SQL>select * from update_count;
+
+     COUNT                                                                                                              
+----------                                                                                                              
+         1                                                                                                              
+
+SQL>update emp set sal=sal+100 where empno=7369;
+
+1 행이 갱신되었습니다.
+
+SQL>select * from update_count;
+
+     COUNT                                                                                                              
+----------                                                                                                              
+         2                                                                                                              
+
+SQL>DROP TRIGGER emp_update;
+
+트리거가 삭제되었습니다.
+
+SQL>select * from update_count;
+
+     COUNT                                                                                                              
+----------                                                                                                              
+         2                                                                                                              
+
+SQL>SELECT * FROM sp;
+
+S#  P#         QTY                                                                                                      
+--- --- ----------                                                                                                      
+S1  P1         300                                                                                                      
+S1  P2         200                                                                                                      
+S1  P3         400                                                                                                      
+S1  P4         200                                                                                                      
+S1  P5         100                                                                                                      
+S1  P6         100                                                                                                      
+S2  P1         300                                                                                                      
+S2  P2         400                                                                                                      
+S3  P2         200                                                                                                      
+S4  P2         200                                                                                                      
+S4  P4         300                                                                                                      
+S4  P5         400                                                                                                      
+
+12 개의 행이 선택되었습니다.
+
+SQL>CREATE or REPLACE TRIGGER sp_del_before_s
+  2     BEFORE DELETE ON s
+  3  FOR EACH ROW
+  4  BEGIN
+  5      DELETE FROM sp
+  6      WHERE S# = :OLD.S#;
+  7  END;
+  8  /
+
+트리거가 생성되었습니다.
+
+SQL>
+SQL>
+SQL>DELETE FROM s WHERE S# = 'S1';
+
+1 행이 삭제되었습니다.
+
+SQL>SELECT * FROM sp;
+
+S#  P#         QTY                                                                                                      
+--- --- ----------                                                                                                      
+S2  P1         300                                                                                                      
+S2  P2         400                                                                                                      
+S3  P2         200                                                                                                      
+S4  P2         200                                                                                                      
+S4  P4         300                                                                                                      
+S4  P5         400                                                                                                      
+
+6 개의 행이 선택되었습니다.
+
+SQL>ALTER TRIGGER sp_del_before_s DISABLE;
+
+트리거가 변경되었습니다.
+
+SQL>DELETE FROM S WHERE S# = 'S2';
+DELETE FROM S WHERE S# = 'S2'
+*
+1행에 오류:
+ORA-02292: 무결성 제약조건(SQL.SYS_C0012881)이 위배되었습니다- 자식 레코드가 발견되었습니다 
+
+
+SQL>
+SQL>ALTER TRIGGER sp_del_before_s ENABLE;
+
+트리거가 변경되었습니다.
+
+SQL>DELETE FROM S WHERE S# = 'S2';
+
+1 행이 삭제되었습니다.
+
+SQL>
+SQL>DROP TRIGGER sp_del_before_s;
+
+트리거가 삭제되었습니다.
+
+SQL>CREATE OR REPLACE TRIGGER null_changer
+  2     BEFORE  INSERT ON emp
+  3   FOR EACH ROW
+  4     WHEN (NEW.sal IS NULL)
+  5     BEGIN
+  6            :NEW.sal := 0;
+  7     END;
+  8   /
+
+트리거가 생성되었습니다.
+
+SQL>
+SQL>INSERT INTO EMP VALUES (8000, 'SQL', 'CLERK',     7782, '82-01-23', NULL, NULL, 10);
+
+1 개의 행이 만들어졌습니다.
+
+SQL>select * from emp;
+
+     EMPNO ENAME      JOB              MGR HIREDATE        SAL       COMM     DEPTNO                                    
+---------- ---------- --------- ---------- -------- ---------- ---------- ----------                                    
+      8000 SQL        CLERK           7782 82/01/23          0                    10                                    
+      7369 SMITH      CLERK           7902 80/12/17       1000                    20                                    
+      7499 ALLEN      SALESMAN        7698 81/02/20       1600        300         30                                    
+      7521 WARD       SALESMAN        7698 81/02/22       1250        500         30                                    
+      7566 JONES      MANAGER         7839 81/04/02       2975                    20                                    
+      7654 MARTIN     SALESMAN        7698 81/09/28       1250       1400         30                                    
+      7698 BLAKE      MANAGER         7839 81/05/01       2850                    30                                    
+      7782 CLARK      MANAGER         7839 81/09/09       2450                    10                                    
+      7788 SCOTT      ANALYST         7566 82/12/09       3000                    20                                    
+      7839 KING       PRESIDENT            81/11/17       5000                    10                                    
+      7844 TURNER     SALESMAN        7698 81/09/08       1500          0         30                                    
+      7876 ADAMS      CLERK           7788 83/01/12       1100                    20                                    
+      7900 JAMES      CLERK           7698 81/12/03        950                    30                                    
+      7902 FORD       ANALYST         7566 81/12/03       3000                    20                                    
+      7934 MILLER     CLERK           7782 82/01/23       1300                    10                                    
+
+15 개의 행이 선택되었습니다.
+
+SQL>
+SQL>DROP TRIGGER null_changer;
+
+트리거가 삭제되었습니다.
+
+SQL>CREATE OR REPLACE TRIGGER day_protection
+  2     BEFORE DELETE OR INSERT OR UPDATE ON EMP
+  3  BEGIN
+  4   IF TO_CHAR(SYSDATE, 'DAY') = '수요일'
+  5      THEN
+  6           RAISE_APPLICATION_ERROR(-20005, '수요일엔 자료수정 불가!');
+  7    END IF;
+  8  END;
+  9  /
+
+트리거가 생성되었습니다.
+
+SQL>update emp set sal=sal+500 where empno=7369;
+update emp set sal=sal+500 where empno=7369
+       *
+1행에 오류:
+ORA-20005: 수요일엔 자료수정 불가!
+ORA-06512: "SQL.DAY_PROTECTION",  4행
+ORA-04088: 트리거 'SQL.DAY_PROTECTION'의 수행시 오류 
+
+
+SQL>
+SQL>DROP TRIGGER day_protection;
+
+트리거가 삭제되었습니다.
+
+SQL>SELECT * FROM EMP;
+
+     EMPNO ENAME      JOB              MGR HIREDATE        SAL       COMM     DEPTNO                                    
+---------- ---------- --------- ---------- -------- ---------- ---------- ----------                                    
+      8000 SQL        CLERK           7782 82/01/23          0                    10                                    
+      7369 SMITH      CLERK           7902 80/12/17       1000                    20                                    
+      7499 ALLEN      SALESMAN        7698 81/02/20       1600        300         30                                    
+      7521 WARD       SALESMAN        7698 81/02/22       1250        500         30                                    
+      7566 JONES      MANAGER         7839 81/04/02       2975                    20                                    
+      7654 MARTIN     SALESMAN        7698 81/09/28       1250       1400         30                                    
+      7698 BLAKE      MANAGER         7839 81/05/01       2850                    30                                    
+      7782 CLARK      MANAGER         7839 81/09/09       2450                    10                                    
+      7788 SCOTT      ANALYST         7566 82/12/09       3000                    20                                    
+      7839 KING       PRESIDENT            81/11/17       5000                    10                                    
+      7844 TURNER     SALESMAN        7698 81/09/08       1500          0         30                                    
+      7876 ADAMS      CLERK           7788 83/01/12       1100                    20                                    
+      7900 JAMES      CLERK           7698 81/12/03        950                    30                                    
+      7902 FORD       ANALYST         7566 81/12/03       3000                    20                                    
+      7934 MILLER     CLERK           7782 82/01/23       1300                    10                                    
+
+15 개의 행이 선택되었습니다.
+
+SQL>CREATE OR REPLACE TRIGGER day_protection
+  2     BEFORE DELETE OR INSERT OR UPDATE ON EMP
+  3  BEGIN
+  4   IF TO_CHAR(SYSDATE, 'DAY') = '수요일'
+  5      THEN
+  6           RAISE_APPLICATION_ERROR(-20005, '수요일엔 자료수정 불가!');
+  7    END IF;
+  8  END;
+  9  /
+
+트리거가 생성되었습니다.
+
+SQL>update emp set sal=sal+500 where empno=7369;
+update emp set sal=sal+500 where empno=7369
+       *
+1행에 오류:
+ORA-20005: 수요일엔 자료수정 불가!
+ORA-06512: "SQL.DAY_PROTECTION",  4행
+ORA-04088: 트리거 'SQL.DAY_PROTECTION'의 수행시 오류 
+
+
+SQL>DROP TRIGGER day_protection;
+
+트리거가 삭제되었습니다.
+
+SQL>CREATE TABLE emp_log (
+  2         Emp_id NUMBER(4),
+  3         Log_date DATE,
+  4         old_salary NUMBER(7, 2),
+  5         New_salary NUMBER(7, 2),
+  6         chg_rate NUMBER(7, 2)
+  7      );
+
+테이블이 생성되었습니다.
+
+SQL>
+SQL>CREATE OR REPLACE TRIGGER trace_log_salary
+  2      BEFORE UPDATE  ON emp
+  3      FOR EACH ROW
+  4      WHEN (new.SAL != old.SAL)
+  5  BEGIN
+  6      INSERT INTO emp_log(
+  7          Emp_id
+  8         ,Log_date
+  9         ,old_salary
+ 10         ,New_salary
+ 11         ,chg_rate
+ 12      )
+ 13      VALUES(
+ 14          :new.Empno
+ 15         ,SYSDATE
+ 16         ,:old.SAL
+ 17         ,:new.SAL
+ 18         ,(:new.SAL - :old.SAL) / :old.SAL
+ 19      );
+ 20  END;
+ 21  /
+
+트리거가 생성되었습니다.
+
+SQL>update emp set sal=sal +100 where empno=7369;
+
+1 행이 갱신되었습니다.
+
+SQL>select * from emp_log;
+
+    EMP_ID LOG_DATE OLD_SALARY NEW_SALARY   CHG_RATE                                                                    
+---------- -------- ---------- ---------- ----------                                                                    
+      7369 23/11/22       1000       1100         .1                                                                    
+
+SQL>update emp set sal=700 where empno=7499;
+
+1 행이 갱신되었습니다.
+
+SQL>update emp set sal=1200 where empno=7566;
+
+1 행이 갱신되었습니다.
+
+SQL>select * from emp_log;
+
+    EMP_ID LOG_DATE OLD_SALARY NEW_SALARY   CHG_RATE                                                                    
+---------- -------- ---------- ---------- ----------                                                                    
+      7369 23/11/22       1000       1100         .1                                                                    
+      7499 23/11/22       1600        700       -.56                                                                    
+      7566 23/11/22       2975       1200        -.6                                                                    
+
+SQL>
+SQL>DROP TRIGGER trace_log_salary;
+
+트리거가 삭제되었습니다.
+
+SQL>DROP TABLE emp_log;
+
+테이블이 삭제되었습니다.
+
+SQL>CREATE or REPLACE TRIGGER show_s_update
+  2  BEFORE
+  3  UPDATE ON s
+  4  FOR EACH ROW
+  5  BEGIN
+  6  DBMS_OUTPUT.PUT_LINE('변경 전 컬럼 값 : ' || :old.SNAME);
+  7  DBMS_OUTPUT.PUT_LINE('변경 후 컬럼 값 : ' || :new.SNAME);
+  8  END;
+  9  /
+
+트리거가 생성되었습니다.
+
+SQL>
+SQL>set serveroutput on;
+SQL>UPDATE S SET SNAME='HHH' WHERE S#='S1';
+
+0 행이 갱신되었습니다.
+
+SQL> -- 실습문제
+SQL>DROP TRIGGER show_s_update;
+
+트리거가 삭제되었습니다.
+
+SQL>CREATE OR REPLACE TRIGGER trace_dept
+  2      BEFORE UPDATE ON dept
+  3      FOR EACH ROW
+  4      WHEN (new.DNAME != old.DNAME)
+  5  BEGIN
+  6  DBMS_OUTPUT.PUT_LINE('변경 전 부서명 : ' || :old.DNAME);
+  7  DBMS_OUTPUT.PUT_LINE('변경 후 부서명 : ' || :new.DNAME);
+  8  END;
+  9  /
+
+트리거가 생성되었습니다.
+
+SQL>create table customer (
+  2      c_no    number(3),
+  3      c_name  varchar2(10),
+  4      purchase_count  number(5),
+  5      constraint customer_pk primary key (c_no));
+
+테이블이 생성되었습니다.
+
+SQL>create table goods (
+  2      g_no    number(3),
+  3      g_name  varchar2(10),
+  4      inventory  number(3),
+  5      constraint goods_pk primary key (g_no));
+
+테이블이 생성되었습니다.
+
+SQL>
+SQL>create table purchase (
+  2      purchase_no number(3),
+  3      c_no    number(3),
+  4      g_no    number(3),
+  5      amount number(3),
+  6      purchase_date date,
+  7      constraint purchase_pk primary key (purchase_no),
+  8      constraint rent_fk1 foreign key (c_no) references customer(c_no),
+  9      constraint rent_fk2 foreign key (g_no) references goods(g_no));
+
+테이블이 생성되었습니다.
+
+SQL>
+SQL>insert into customer values(101,'홍길동',0);
+
+1 개의 행이 만들어졌습니다.
+
+SQL>insert into customer values(102,'일지매',0);
+
+1 개의 행이 만들어졌습니다.
+
+SQL>insert into customer values(103,'임꺽정',0);
+
+1 개의 행이 만들어졌습니다.
+
+SQL>
+SQL>insert into goods values(501,'지우개', 100);
+
+1 개의 행이 만들어졌습니다.
+
+SQL>insert into goods values(502,'연필', 200);
+
+1 개의 행이 만들어졌습니다.
+
+SQL>insert into goods values(503,'노트', 150);
+
+1 개의 행이 만들어졌습니다.
+
+SQL>
+SQL>
+SQL>select * from customer;
+
+      C_NO C_NAME     PURCHASE_COUNT                                                                                    
+---------- ---------- --------------                                                                                    
+       101 홍길동                  0                                                                                    
+       102 일지매                  0                                                                                    
+       103 임꺽정                  0                                                                                    
+
+SQL>select * from goods;
+
+      G_NO G_NAME      INVENTORY                                                                                        
+---------- ---------- ----------                                                                                        
+       501 지우개            100                                                                                        
+       502 연필              200                                                                                        
+       503 노트              150                                                                                        
+
+SQL>select * from purchase;
+
+선택된 레코드가 없습니다.
+
+SQL>CREATE OR REPLACE TRIGGER purchase_trigger
+  2  BEFORE INSERT ON purchase
+  3  FOR EACH ROW
+  4  DECLARE
+  5      v_purchase_no NUMBER;
+  6  BEGIN
+  7      SELECT purchase_no.NEXTVAL INTO v_purchase_no FROM dual;
+  8  
+  9      :NEW.purchase_no := v_purchase_no;
+ 10  
+ 11      UPDATE customer
+ 12      SET purchase_count = purchase_count + 1
+ 13      WHERE c_no = :NEW.c_no;
+ 14  
+ 15      UPDATE goods
+ 16      SET inventory = inventory - :NEW.amount
+ 17      WHERE g_no = :NEW.g_no;
+ 18  
+ 19      :NEW.purchase_date := SYSTIMESTAMP;
+ 20  END;
+ 21  /
+
+경고: 컴파일 오류와 함께 트리거가 생성되었습니다.
+
+SQL>CREATE SEQUENCE purchase_no
+  2     INCREMENT BY 1
+  3     START WITH 1
+  4     MAXVALUE 100
+  5     NOCYCLE
+  6     NOCACHE;
+
+시퀀스가 생성되었습니다.
+
+SQL>insert into purchase(purchase_no, c_no, g_no, purchase_date, amount) values(purchase_no.NEXTVAL, 101, 501, SYSDATE, 10);
+
+1 개의 행이 만들어졌습니다.
+
+SQL>insert into purchase(purchase_no, c_no, g_no, purchase_date, amount) values(purchase_no.NEXTVAL, 101, 502, SYSDATE, 10);
+
+1 개의 행이 만들어졌습니다.
+
+SQL>insert into purchase(purchase_no, c_no, g_no, purchase_date, amount) values(purchase_no.NEXTVAL, 101, 503, SYSDATE, 10);
+
+1 개의 행이 만들어졌습니다.
+
+SQL>insert into purchase(purchase_no, c_no, g_no, purchase_date, amount) values(purchase_no.NEXTVAL, 102, 501, SYSDATE, 20);
+
+1 개의 행이 만들어졌습니다.
+
+SQL>insert into purchase(purchase_no, c_no, g_no, purchase_date, amount) values(purchase_no.NEXTVAL, 103, 502, SYSDATE, 30);
+
+1 개의 행이 만들어졌습니다.
+
+SQL>select * from purchase;
+
+PURCHASE_NO       C_NO       G_NO     AMOUNT PURCHASE                                                                   
+----------- ---------- ---------- ---------- --------                                                                   
+          3        101        501         10 23/11/22                                                                   
+          5        101        502         10 23/11/22                                                                   
+          7        101        503         10 23/11/22                                                                   
+          9        102        501         20 23/11/22                                                                   
+         11        103        502         30 23/11/22                                                                   
+
+SQL>select * from goods;
+
+      G_NO G_NAME      INVENTORY                                                                                        
+---------- ---------- ----------                                                                                        
+       501 지우개             70                                                                                        
+       502 연필              160                                                                                        
+       503 노트              140                                                                                        
+
+SQL>select * from customer;
+
+      C_NO C_NAME     PURCHASE_COUNT                                                                                    
+---------- ---------- --------------                                                                                    
+       101 홍길동                  3                                                                                    
+       102 일지매                  1                                                                                    
+       103 임꺽정                  1                                                                                    
+
+SQL>spool off
+

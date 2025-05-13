@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>예약 내역 관리 - YDG Cinema</title>
+    <!-- CSS 파일 링크 -->
+    <link rel="stylesheet" href="/css/check_reservation.css">
+</head>
+<body>
+<header>
+    <div class="header-left">
+        <h1 class="website-name">YDG Cinema</h1>
+    </div>
+    <div class="header-right">
+        <!-- 메인 페이지로 돌아가기 버튼 -->
+        <button onclick="location.href='/movies'">메인으로 돌아가기</button>
+    </div>
+</header>
+<main>
+    <!-- 예약 내역 조회 섹션 -->
+    <section class="reservation-list">
+        <h2>예약 내역</h2>
+        <table id="reservation-table">
+            <thead>
+            <tr>
+                <th>영화 제목</th>
+                <th>상영 시간</th>
+                <th>상영관 번호</th>
+                <th>좌석 번호</th>
+                <th>가격</th>
+                <th>삭제</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!-- JavaScript를 통해 동적으로 예약 내역이 추가됩니다 -->
+            </tbody>
+        </table>
+    </section>
+</main>
+
+<!-- JavaScript 파일 링크 -->
+<script src="/js/check_reservation.js"></script>
+</body>
+</html>

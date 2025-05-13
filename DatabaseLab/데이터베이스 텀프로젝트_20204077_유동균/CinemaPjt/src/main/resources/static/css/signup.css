@@ -1,0 +1,133 @@
+/* 기본 설정 */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+    background-color: #e8f5e9; /* 연한 초록색 배경 */
+    color: #2e7d32; /* 진한 초록색 텍스트 */
+}
+
+/* 상단 헤더 */
+header {
+    display: flex;
+    justify-content: center; /* 텍스트를 중앙으로 정렬 */
+    align-items: center;
+    position: relative; /* 버튼 배치 기준 */
+    background-color: #43a047; /* 상단바 초록색 */
+    color: white;
+    padding: 15px 20px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+header button {
+    position: absolute; /* 헤더 기준 위치 고정 */
+    top: 25px; /* 상단 여백 */
+    right: 15px; /* 우측 여백 */
+    background-color: #2e7d32;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+header button:hover {
+    background-color: #1b5e20; /* 버튼 호버 시 색상 */
+}
+
+.website-name {
+    font-size: 2.5rem; /* 헤더 중앙의 제목 크기 */
+    font-weight: bold;
+    margin: 0;
+    text-align: center;
+    letter-spacing: 2px; /* 글자 간격 */
+    flex: 1;
+}
+
+/* 회원가입 박스 */
+.signup-box {
+    background-color: white;
+    padding: 30px;
+    border-radius: 15px; /* 둥근 모서리 */
+    box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.2); /* 그림자 강조 */
+    width: 90%; /* 화면 비율에 맞춤 */
+    max-width: 450px; /* 최대 너비 */
+    margin: 20px auto; /* 중앙 정렬 */
+    text-align: center;
+    box-sizing: border-box; /* 패딩 포함 너비 계산 */
+}
+
+.signup-box h2 {
+    font-size: 2rem; /* 글씨 크기 증가 */
+    color: #2e7d32; /* 진한 초록색 */
+    margin-bottom: 20px;
+    font-family: 'Trebuchet MS', sans-serif; /* 세련된 글꼴 */
+}
+
+/* 폼 */
+.signup-box form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* 입력 요소 간 간격 */
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.signup-box label {
+    font-size: 1.1rem; /* 글씨 크기 약간 증가 */
+    color: #2e7d32;
+    text-align: left;
+    margin-left: 5px;
+}
+
+.signup-box input {
+    padding: 12px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 100%; /* 입력 창 너비 */
+    box-sizing: border-box; /* 패딩 포함 너비 계산 */
+}
+
+.signup-box button {
+    padding: 12px;
+    background-color: #2e7d32;
+    color: white;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100%; /* 버튼 너비 */
+    box-sizing: border-box;
+}
+
+.signup-box button:hover {
+    background-color: #1b5e20; /* 버튼 호버 색상 */
+}
+
+/* 오류 메시지 */
+.error-message {
+    color: red;
+    font-size: 0.9rem;
+    margin-top: -10px;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 600px) {
+    .signup-box {
+        width: 90%; /* 작은 화면에서 박스 크기 조정 */
+        padding: 20px;
+    }
+
+    .signup-box h2 {
+        font-size: 1.8rem;
+    }
+
+    .signup-box button {
+        font-size: 1rem;
+    }
+}

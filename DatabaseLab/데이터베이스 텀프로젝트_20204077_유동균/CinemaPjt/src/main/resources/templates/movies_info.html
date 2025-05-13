@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>영화 상세 정보</title>
+    <link rel="stylesheet" href="/css/movie_info.css">
+</head>
+<body>
+<header>
+    <div class="header-left">
+        <button onclick="location.href='/movies'">돌아가기</button>
+    </div>
+    <div class="header-center">
+        <h1>영화 상세 정보</h1>
+    </div>
+</header>
+<main>
+    <div class="container">
+        <!-- 좌측: 영화 정보 -->
+        <section class="movie-info">
+            <img id="movie-poster" src="" alt="영화 포스터">
+            <h2 id="movie-title">영화 제목</h2>
+            <p><strong>감독:</strong> <span id="movie-director">감독 정보</span></p>
+            <p><strong>장르:</strong> <span id="movie-genre">장르 정보</span></p>
+            <p><strong>주연 배우:</strong> <span id="movie-lead-actor">주연 배우 정보</span></p>
+        </section>
+        <!-- 우측: 상영 시간표 -->
+        <section class="schedule">
+            <h2>상영 시간표</h2>
+            <ul id="schedule-list">
+                <!-- 상영 시간표가 동적으로 추가됩니다 -->
+            </ul>
+        </section>
+    </div>
+</main>
+<script src="/js/movies_info.js"></script>
+</body>
+</html>

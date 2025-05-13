@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>좌석 선택</title>
+    <link rel="stylesheet" href="/css/theater_reservation.css">
+
+
+</head>
+<body>
+<header>
+    <h1>좌석 선택</h1>
+    <button onclick="goBack()">뒤로가기</button>
+</header>
+
+<div class="container">
+    <div class="left-section">
+        <label for="person-count">인원 수:</label>
+        <input type="number" id="person-count" min="1" value="1">
+    </div>
+    <div class="center-section">
+        <div id="theater-type" class="theater-type">상영관 정보: </div>
+    </div>
+    <div class="right-section">
+        <button id="reserve-button">좌석 예약</button>
+    </div>
+</div>
+
+<div id="seat-container">
+    <h2>좌석 배치</h2>
+    <div id="seat-map" class="seat-map"></div>
+</div>
+
+<!-- JavaScript 코드 -->
+<script th:inline="javascript">
+    // Thymeleaf에서 데이터를 가져오는 부분
+    const movieId = /*[[${movieId}]]*/ '';
+    const showTime = /*[[${showTime}]]*/ '';
+    const theaterId = /*[[${theaterId}]]*/ '';
+
+
+    document.addEventListener("DOMContentLoaded", async function () {
+        const seatContainer = document.getElementById("seat-container");
+        let reservedSeats = []; // 서버에서 받아온 전체 좌석 데이터 저장
+        const personCountInput = document.getElementById("person-count");
+        let maxSelectable = 0; // 선택 가능한 최대 좌석 수
+        const reserveButton = document.getElementById("reserve-button");
+        let ticketPrice = 0; // 상영 스케줄에서 가져올 기본 요금
+        let theaterType; // 상영관 유형 변수
+        let cachedMember = null; // 로그인된 회원 정보 캐시
+
+
+        async function initialize() {
+            try {
+                await fetchMemberData(); // 로그인된 회원 정보 가져오기
+                await fetchTicketPrice(); // 요금 정보 가져오기
+                await fetchReservedSeats(); // 좌석 데이터 가져오기
+                displayTheaterType(theaterType); // 상영관 유형 표시
+            } catch (error) {
+                console.error("초기화 중 오류 발생:", error);
+            }
+        }
+
+        // 현재 로그인한 사용자 정보를 가져오기
+        async function fetchMemberData() {
+            try {
+                const response = await fetch("/api/members/details");
+                if (response.ok) {
+                    cachedMember = await response.json();
+                    console.log("회원 정보:", cachedMember);
+                } else if (response.status === 401) {
+                    alert("로그인이 필요합니다.");
+                    window.location.href = "/login";
+                } else {
+                    alert("회원 정보를 가져오는 데 실패했습니다.");
+                }
+            } catch (error) {
+                console.error("회원 정보 가져오기 오류:", error);
+            }
+        }
+
+        // 서버에서 예약된 좌석 데이터를 가져오기
+        async function fetchReservedSeats() {
+            try {
+                const url = `http://localhost:8080/seats?movieId=${movieId}&showTime=${showTime}&theaterId=${theaterId}`;
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`서버로부터 데이터를 가져오는 데 실패했습니다: ${response.status}`);
+                }
+                reservedSeats = await response.json();
+                console.log("받아온 좌석 데이터:", reservedSeats);
+                createSeats(theaterId); // 좌석 생성
+                theaterType = getTheaterType(theaterId); // 상영관 유형 저장
+            } catch (error) {
+                console.error("좌석 데이터를 가져오는 중 오류 발생:", error);
+            }
+        }
+
+        // 상영 스케줄에서 요금 정보 가져오기
+        async function fetchTicketPrice() {
+            try {
+                const url = `http://localhost:8080/schedule?movieId=${movieId}&showTime=${showTime}&theaterId=${theaterId}`;
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`요금 정보를 가져오는 데 실패했습니다: ${response.status}`);
+                }
+                const schedule = await response.json();
+                ticketPrice = schedule.price;
+                console.log("상영 요금:", ticketPrice);
+            } catch (error) {
+                console.error("요금 정보를 가져오는 중 오류 발생:", error);
+            }
+        }
+
+        // 상영관 유형 매핑 함수
+        function getTheaterType(theaterId) {
+            switch (theaterId) {
+                case "1": return "2D";
+                case "2": return "3D";
+                case "3": return "X-SCREEN";
+                default: return "알 수 없음";
+            }
+        }
+
+        // 상영관 유형 표시 함수
+        function displayTheaterType(type) {
+            const theaterTypeElement = document.getElementById("theater-type");
+            if (theaterTypeElement) {
+                theaterTypeElement.textContent = `상영관 유형: ${type}`;
+            } else {
+                console.error("상영관 유형 표시 요소가 없습니다.");
+            }
+        }
+
+        // 영화관 유형 및 좌석 배열 생성
+        function createSeats(theaterId) {
+            seatContainer.innerHTML = ""; // 기존 좌석 초기화
+            let rows = [], columns = [], colCount = 0;
+
+            // 상영관에 따른 좌석 배열 정의
+            switch (theaterId) {
+                case "1": rows = ["A", "B"]; columns = ["a", "b", "c"]; colCount = 10; break;
+                case "2": rows = ["A", "B", "C"]; columns = ["a", "b"]; colCount = 10; break;
+                case "3": rows = ["A", "B"]; columns = ["a", "b", "c"]; colCount = 8; break;
+                default: alert("잘못된 상영관 번호입니다."); return;
+            }
+
+            // 좌석 UI 생성
+            rows.forEach((row) => {
+                columns.forEach((column) => {
+                    const rowDiv = document.createElement("div");
+                    rowDiv.classList.add("seat-row");
+                    rowDiv.textContent = `${row}열 ${column}: `;
+                    for (let i = 1; i <= colCount; i++) {
+                        const seatId = `${column}${i}`;
+                        const seatButton = document.createElement("button");
+                        seatButton.textContent = i;
+                        seatButton.classList.add("seat");
+                        seatButton.dataset.row = row;
+                        seatButton.dataset.column = column;
+                        seatButton.dataset.number = i;
+
+                        const isReserved = reservedSeats.some(
+                            (seat) => seat.rowNumber === row && seat.seatNumber === seatId && seat.reserved
+                        );
+                        if (isReserved) {
+                            seatButton.classList.add("reserved");
+                            seatButton.disabled = true;
+                        } else {
+                            seatButton.addEventListener("click", () => toggleSeatSelection(seatButton));
+                        }
+                        rowDiv.appendChild(seatButton);
+                    }
+                    seatContainer.appendChild(rowDiv);
+                });
+            });
+        }
+
+        // 좌석 선택 상태 관리
+        let selectedSeats = [];
+        function toggleSeatSelection(seatButton) {
+            const seat = {
+                row: seatButton.dataset.row,
+                column: seatButton.dataset.column,
+                number: seatButton.dataset.number,
+            };
+            if (seatButton.classList.contains("selected")) {
+                seatButton.classList.remove("selected");
+                selectedSeats = selectedSeats.filter(
+                    (s) => !(s.row === seat.row && s.column === seat.column && s.number === seat.number)
+                );
+            } else {
+                if (selectedSeats.length >= maxSelectable) {
+                    alert(`최대 ${maxSelectable}개의 좌석만 선택 가능합니다.`);
+                    return;
+                }
+                seatButton.classList.add("selected");
+                selectedSeats.push(seat);
+            }
+            aler("현재 선택된 좌석:", selectedSeats);
+        }
+
+        // 인원 수 변경 이벤트
+        personCountInput.addEventListener("change", (event) => {
+            const count = parseInt(event.target.value, 10);
+            if (isNaN(count) || count <= 0) {
+                alert("올바른 인원 수를 입력하세요.");
+                return;
+            }
+            maxSelectable = count;
+            selectedSeats = [];
+            document.querySelectorAll(".seat.selected").forEach((seat) => {
+                seat.classList.remove("selected");
+            });
+        });
+
+        // 예약 버튼 클릭 이벤트
+        reserveButton.addEventListener("click", async () => {
+            if (selectedSeats.length === 0) {
+                alert("좌석을 선택해주세요.");
+                return;
+            }
+            if (!cachedMember) {
+                alert("회원 정보를 가져오는 데 실패했습니다.");
+                return;
+            }
+            const totalPrice = String(ticketPrice);
+            const personCount = String(personCountInput.value.trim());
+
+            const payload = selectedSeats.map((seat) => ({
+                movieId,              // 영화 ID
+                showTime,             // 상영 시간
+                theaterId,            // 상영관 ID
+                amount: totalPrice,  // 가격 (개별 좌석당 금액)
+                memberId: cachedMember.memberId, // 회원 정보
+                rowNumber: seat.row, // 행 정보
+                seatNumber: `${seat.column}${seat.number}`, // 좌석 번호
+                personCount,
+            }));
+
+            sessionStorage.setItem("reservationPayload", JSON.stringify(payload));
+
+            try {
+                const response = await fetch("/api/reservation", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(payload),
+                });
+
+                if (!response.ok) {
+                    throw new Error("서버로 데이터 전송 실패");
+                }
+                window.location.href = "/payment";
+            } catch (error) {
+                console.error("예약 요청 중 오류 발생:", error);
+                alert("오류 전송된 Payload: " + JSON.stringify(payload, null, 2));
+
+            }
+        });
+
+        await initialize();
+    });
+
+
+</script>
+</body>
+</html>

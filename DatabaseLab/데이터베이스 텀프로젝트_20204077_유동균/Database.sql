@@ -1,0 +1,1 @@
+SHOW CREATE TABLE 상영관좌석;

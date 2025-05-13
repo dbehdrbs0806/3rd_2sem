@@ -1,0 +1,861 @@
+데베 텀프
+영화관
+1. PostgreSQL 다운
+=> 슈퍼 password: 00000000
+     port 5432
+2. 다운할 때 여러가지 설치하는거 사용 안해야함
+3. 환경변수 설정
+4. SQL로 사용
+Server [localhost]: 사용하는 곳의 Ip주소 입력창인데 enter누르면 local로 됨
+Database [postgres]: 연결하는 DB이름 enter누르면 default postgres
+Port [5432] : 포트번호 입력 안하면 default
+Username [postgres]: default postgres
+
+음.... PostgreSQL 사용 살짝 귀찮애매? 손절,,,
+마리아 쓸게요 죄송합니다.
+
+mariaDB 마리아DB사용
+USE cinema_db;
+
+CREATE TABLE 회원 (
+    ->     회원번호 VARCHAR(10) NOT NULL PRIMARY KEY,      -- 회원 고유 번호
+    ->     비밀번호 VARCHAR(64) NOT NULL,                 -- 비밀번호 (암호화된 값 저장 예상)
+    ->     회원이름 VARCHAR(20) NOT NULL,                 -- 회원 이름
+    ->     휴대전화 VARCHAR(16) NOT NULL,                -- 연락처
+    ->     등급 VARCHAR(10) NOT NULL DEFAULT 'SILVER',    -- 회원 등급 (기본값 SILVER)
+    ->     카드번호 VARCHAR(26) NOT NULL                 -- 회원 카드 번호 (마지막 쉼표 제거)
+    -> );
+
+BLOB(Binary Large Object)는 대용량 바이너리 데이터를 저장하기 위한 데이터 
+타입입니다. 주로 이미지, 동영상, 오디오, PDF 파일 비구조적 데이터를
+
+CREATE TABLE 상영스케줄 (
+    영화번호 VARCHAR(10) NOT NULL,                      -- 영화 고유 번호 (외래키)
+    상영시간 DATE NOT NULL,                            -- 상영 시간
+    상영관번호 VARCHAR(10) NOT NULL,                   -- 상영관 번호 (외래키)
+    요금 VARCHAR(10) NOT NULL CHECK (요금 > 0),        -- 상영 요금 (0보다 큰 값만 허용)
+    PRIMARY KEY (영화번호, 상영시간, 상영관번호),       -- 복합 기본키
+    FOREIGN KEY (영화번호) REFERENCES 영화(영화번호),   -- 외래키: 영화
+    FOREIGN KEY (상영관번호) REFERENCES 상영관(상영관번호) -- 외래키: 상영관
+);
+check 제약조건: 특정 칼럼에서 저장된 데이터 값의 특정 
+조건을 강제하는데 사용
+
+FOREIGN KEY (회원번호) REFERENCES 회원(회원번호) ON DELETE CASCADE ON UPDATE CASCADE
+
+ON DELETE CASCADE ON UPDATE CASCADE,
+참조 테이블 데이터가 삭제되면 해당 연결된 데이터와 자동으로 같이 삭제됨
+
+ENGINE=InnoDB 
+관계형 데이터베이스를 구축할 때 외래키, 트랜잭션, 데이터 복구 등 많은 기능을 
+제공하는 가장 강력한 스토리지 엔진
+트랜잭션 지원
+
+외래키는 DESC로 표시될 때 MUL (중복값 허용으로 나타남)
+
+ALTER TABLE 회원
+ADD CONSTRAINT FK_회원_등급
+FOREIGN KEY (등급)
+REFERENCES 할인율의등급 (등급);
+=> 테이블 구조 변경 ALTER사용
+ADD CONSTRAINT 제약조건 추가 무조건 분류 시 _를 사용 띄어쓰기 안됨
+
+
+ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+1. 스프링부트에 mariadb연결, 연동
+2. application.properties 에 DB 설정 추가
+3. spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MariaDBDialect
+명시적인 MariaDB사용 추가
+
+4. entity 생성 시 대부분은 다 아는건데 이제 foreign key생성 시 두 가지 방법 존재
+1. @Enbeddable		// 어노테이션으로 표기하여 보다 편할 수 있음
+2. @IdClass		// entity를 생성해서 접근하기에 조금 불편할 수 있어도 DB관점에서는 좋음
+
+5.복합키 생성시
+implements Serializable 로 생성한 class는 복합 클래스, 외부키로 겹치는
+속성이 존재하는 테이블로 구성됨
+
+6. @Lob은 Large Object
+큰 데이터나 사진 등 담는 어노테이션
+
+7. application.properties에 무조건 port 설정을 해놔야 화면(프론트)를 볼 수
+있다
+
+8. html 은 templates에
+   css, js는 static에 디렉토리 생성 후 대입
+
+ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+하면서 발생한 오류
+1. 스프링 부트 처음 생성하고 실행 시 발생 오류 
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2024-11-26T22:51:16.113+09:00 ERROR 26756 --- [CinemaPjt] [           main] o.s.b.d.LoggingFailureAnalysisReporter   :
+=> 아마 DB 연결을 안해서 발생하는 오류
+
+application.properties DB 설정 추가
+
+2. 스프링 부트에 DB연동 시 발생 오류
+2024-11-26T23:58:19.868+09:00 ERROR 7236 --- [CinemaPjt] [        
+main] o.h.engine.jdbc.spi.SqlExceptionHelper   : (conn=9) Access denied for user 'host'@'localhost' (using password: YES)
+=> DB에서 접근 권한의 오류가 발생 
+GRANT ALL PRIVILEGES ON *.* TO 'host'@'localhost' IDENTIFIED BY 'yourpassword';
+FLUSH PRIVILEGES;
+
+
+
+
+
+
+
+
+
+ChatGPT는 실수
+
+
+
+ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+사용자: 관리자, 회원(소비자)
+
+관리자 => 영화 등록 상영관, 상영일지 등
+정함
+고객 => 영화 조회, 예약, 수정, 취소 가능
+
+예약 시 복수의 좌석 선택 가능
+
+영화 개체
+=> 고유번호, 영화제목, 장르, 감독, 주연배우
+포스터가 존재
+=> 포스터는 이미지데이터
+=> 주연배우는 가변길이 문자열
+
+극장
+상영관 1(2D), 2(3D), 3(X-screen)관 존재
+상영관 => 상영관 번호, 상영관 형태, 좌석배열
+1관 =>  A 3 * 10
+            B 3 * 10
+2관 =>	A 2*10
+	B 2*10
+	C 2*10
+3관 =>	A 3*8
+	B 3*8
+
+영화 시간표 => 영화, 상영관, 시간, 요금
+
+고객(회원) => 아이디, 비밀번호, 이름, 전화번호
+신용카드  / 관리자 승인필요
+전화번호는 휴대전화만
+등급 VIP, Gold, silver 50, 30, 10 퍼센트 할인율
+
+영화 예약의 순서
+1. 영화선택
+2. 상영관 및 날짜/상영시간 선택
+3. 좌석 선택(마우스로 좌석 선택)
+4. 결제방법 선택
+5. 완료 (할인 적용)
+
+예약 시 저장되는 정보
+1. 예약번호, 예매일시, 좌석번호, 예매금액
+
+관리자 admin, 1111
+회원 등록, 승인 등급부여
+영화 등록, 상영시간표
+등급별 할인율관리
+
+
+ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+
+document.addEventListener("DOMContentLoaded", function () {
+    const seatContainer = document.getElementById("seat-container");
+    const personCountInput = document.getElementById("person-count");
+    const reserveButton = document.getElementById("reserve-button");
+
+    let selectedSeats = []; // 선택된 좌석 추적
+    let maxSelectable = 0; // 선택 가능한 최대 좌석 수
+    let reservedSeats = []; // 서버에서 받아오는 예약된 좌석 데이터
+
+    // 서버에서 예약된 좌석 데이터를 가져오기
+    async function fetchReservedSeats(movieId, showTime, theaterId) {
+        try {
+            const url = `http://localhost:8080/seats?movieId=${movieId}&showTime=${encodeURIComponent(
+                showTime
+            )}&theaterId=${theaterId}`;
+
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`서버로부터 데이터를 가져오는 데 실패했습니다: ${response.status}`);
+            }
+
+            reservedSeats = await response.json(); // JSON 데이터를 파싱
+            console.log("예약된 좌석 데이터:", reservedSeats);
+            createSeats(theaterId); // 좌석 생성
+        } catch (error) {
+            console.error("좌석 데이터를 가져오는 중 오류 발생:", error);
+        }
+    }
+
+    // 좌석 배열 생성
+    function createSeats(theaterId) {
+        seatContainer.innerHTML = ""; // 기존 좌석 초기화
+        let rows = [];
+        let columns = [];
+        let colCount = 0;
+
+        // 상영관에 따른 좌석 배열 정의
+        switch (theaterId) {
+            case "1": // 1관: A, B 열, 10x3 배열
+                rows = ["A", "B"];
+                columns = ["a", "b", "c"];
+                colCount = 10; // 좌석 번호 개수
+                break;
+            case "2": // 2관: A, B, C 열, 10x2 배열
+                rows = ["A", "B", "C"];
+                columns = ["a", "b"];
+                colCount = 10; // 좌석 번호 개수
+                break;
+            case "3": // 3관: A, B 열, 8x3 배열
+                rows = ["A", "B"];
+                columns = ["a", "b", "c"];
+                colCount = 8; // 좌석 번호 개수
+                break;
+            default:
+                alert("잘못된 상영관 번호입니다.");
+                return;
+        }
+
+        // 좌석 UI 생성
+        rows.forEach((row) => {
+            columns.forEach((column) => {
+                const rowDiv = document.createElement("div"); // 행 컨테이너
+                rowDiv.classList.add("seat-row");
+                rowDiv.textContent = `${row}열 ${column}: `; // A열 a, B열 b, ...
+
+                for (let i = 1; i <= colCount; i++) {
+                    const seatButton = document.createElement("button");
+                    seatButton.textContent = i; // 열 번호(숫자)
+                    seatButton.classList.add("seat");
+                    seatButton.dataset.row = row; // A, B, ...
+                    seatButton.dataset.column = column; // a, b, c, ...
+                    seatButton.dataset.number = i; // 좌석 번호
+
+                    // 예약된 좌석 표시
+                    if (
+                        reservedSeats.some(
+                            (s) =>
+                                s.row === row &&
+                                s.column === column &&
+                                s.number == i
+                        )
+                    ) {
+                        seatButton.classList.add("reserved");
+                        seatButton.disabled = true; // 예약된 좌석은 선택 불가
+                    } else {
+                        // 좌석 클릭 이벤트
+                        seatButton.addEventListener("click", () => toggleSeatSelection(seatButton));
+                    }
+
+                    rowDiv.appendChild(seatButton);
+                }
+
+                seatContainer.appendChild(rowDiv);
+            });
+        });
+    }
+
+    // 좌석 선택 처리
+    function toggleSeatSelection(seatButton) {
+        const seat = {
+            row: seatButton.dataset.row, // 행 (A, B, ...)
+            column: seatButton.dataset.column, // 열 (a, b, c, ...)
+            number: seatButton.dataset.number, // 좌석 번호 (1, 2, 3, ...)
+        };
+
+        if (seatButton.classList.contains("selected")) {
+            // 선택 해제
+            seatButton.classList.remove("selected");
+            selectedSeats = selectedSeats.filter(
+                (s) =>
+                    !(s.row === seat.row && s.column === seat.column && s.number === seat.number)
+            );
+        } else {
+            if (selectedSeats.length >= maxSelectable) {
+                alert(`최대 ${maxSelectable}개의 좌석만 선택 가능합니다.`);
+                return;
+            }
+
+            // 선택 추가
+            seatButton.classList.add("selected");
+            selectedSeats.push(seat);
+        }
+
+        console.log("선택된 좌석:", selectedSeats);
+    }
+
+    // 인원 수 변경 이벤트
+    personCountInput.addEventListener("change", (event) => {
+        const count = parseInt(event.target.value, 10);
+        if (isNaN(count) || count <= 0) {
+            alert("올바른 인원 수를 입력하세요.");
+            return;
+        }
+
+        maxSelectable = count; // 선택 가능한 최대 좌석 수 설정
+        selectedSeats = []; // 선택 초기화
+        document.querySelectorAll(".seat.selected").forEach((seat) => {
+            seat.classList.remove("selected");
+        });
+    });
+
+    // 예약 버튼 클릭 이벤트
+    reserveButton.addEventListener("click", () => {
+        if (selectedSeats.length !== maxSelectable) {
+            alert(`좌석 ${maxSelectable}개를 선택해주세요.`);
+            return;
+        }
+
+        alert(
+            `선택된 좌석: ${selectedSeats
+                .map((s) => `${s.row}열 ${s.column}${s.number}`)
+                .join(", ")}`
+        );
+        // 예약 API 호출 가능
+    });
+
+});
+
+ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+
+
+
+document.addEventListener("DOMContentLoaded", async function () {
+    const seatContainer = document.getElementById("seat-container");
+    let reservedSeats = []; // 서버에서 받아온 전체 좌석 데이터 저장
+    const personCountInput = document.getElementById("person-count");
+
+    let maxSelectable = 0; // 선택 가능한 최대 좌석 수
+    const reserveButton = document.getElementById("reserve-button");
+    let ticketPrice = 0; // 상영 스케줄에서 가져올 기본 요금
+
+    let theaterType; // 상영관 유형 변수
+
+    async function initialize(movieId, showTime, theaterId) {
+        try {
+            // 요금 정보를 먼저 가져옵니다.
+            await fetchTicketPrice(movieId, showTime, theaterId);
+            // 좌석 데이터를 가져옵니다.
+            await fetchReservedSeats(movieId, showTime, theaterId);
+            // 상영관 유형 표시
+            displayTheaterType(theaterType);
+        } catch (error) {
+            console.error("초기화 중 오류 발생:", error);
+        }
+    }
+
+    // 서버에서 예약된 좌석 데이터를 가져오기
+    async function fetchReservedSeats(movieId, showTime, theaterId) {
+        try {
+            const url = `http://localhost:8080/seats?movieId=${movieId}&showTime=${encodeURIComponent(
+                showTime
+            )}&theaterId=${theaterId}`;
+
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`서버로부터 데이터를 가져오는 데 실패했습니다: ${response.status}`);
+            }
+
+            reservedSeats = await response.json(); // JSON 데이터를 파싱
+            console.log("받아온 좌석 데이터:", reservedSeats);
+            createSeats(theaterId); // 좌석 생성
+
+            theaterType = getTheaterType(theaterId); // 상영관 유형 저장
+
+        } catch (error) {
+            console.error("좌석 데이터를 가져오는 중 오류 발생:", error);
+        }
+    }
+
+    // 상영 스케줄에서 요금 정보 가져오기
+    async function fetchTicketPrice(movieId, showTime, theaterId) {
+        try {
+            const url = `http://localhost:8080/schedule?movieId=${movieId}&showTime=${encodeURIComponent(
+                showTime
+            )}&theaterId=${theaterId}`;
+
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`요금 정보를 가져오는 데 실패했습니다: ${response.status}`);
+            }
+
+            const schedule = await response.json();
+            ticketPrice = schedule.price; // 요금을 저장
+
+            console.log("상영 요금:", ticketPrice);
+        } catch (error) {
+            console.error("요금 정보를 가져오는 중 오류 발생:", error);
+        }
+    }
+
+    // 상영관 유형 매핑 함수
+    function getTheaterType(theaterId) {
+        switch (theaterId) {
+            case "1":
+                return "2D";
+            case "2":
+                return "3D";
+            case "3":
+                return "X-SCREEN";
+            default:
+                return "알 수 없음";
+        }
+    }
+
+    // 상영관 유형 표시 함수
+    function displayTheaterType(type) {
+        const theaterTypeElement = document.getElementById("theater-type");
+        if (theaterTypeElement) {
+            theaterTypeElement.textContent = `상영관 유형: ${type}`;
+        } else {
+            console.error("상영관 유형 표시 요소가 없습니다.");
+        }
+    }
+
+    // 영화관 유형 및 좌석 배열 생성
+    function createSeats(theaterId) {
+        seatContainer.innerHTML = ""; // 기존 좌석 초기화
+        let rows = [];
+        let columns = [];
+        let colCount = 0;
+
+        // 상영관에 따른 좌석 배열 정의
+        switch (theaterId) {
+            case "1": // 1관: A, B 열, 10x3 배열
+                rows = ["A", "B"];
+                columns = ["a", "b", "c"];
+                colCount = 10;
+                break;
+            case "2": // 2관: A, B, C 열, 10x2 배열
+                rows = ["A", "B", "C"];
+                columns = ["a", "b"];
+                colCount = 10;
+                break;
+            case "3": // 3관: A, B 열, 8x3 배열
+                rows = ["A", "B"];
+                columns = ["a", "b", "c"];
+                colCount = 8;
+                break;
+            default:
+                alert("잘못된 상영관 번호입니다.");
+                return;
+        }
+
+        // 좌석 UI 생성
+        rows.forEach((row) => {
+            columns.forEach((column) => {
+                const rowDiv = document.createElement("div");
+                rowDiv.classList.add("seat-row");
+                rowDiv.textContent = `${row}열 ${column}: `;
+
+                for (let i = 1; i <= colCount; i++) {
+                    const seatId = `${column}${i}`;
+                    const seatButton = document.createElement("button");
+                    seatButton.textContent = i; // 좌석 번호
+                    seatButton.classList.add("seat");
+                    seatButton.dataset.row = row;
+                    seatButton.dataset.column = column;
+                    seatButton.dataset.number = i;
+
+                    // 예약된 좌석인지 확인
+                    const isReserved = reservedSeats.some(
+                        (seat) =>
+                            seat.rowNumber === row &&
+                            seat.seatNumber === seatId &&
+                            seat.reserved
+                    );
+
+                    if (isReserved) {
+                        seatButton.classList.add("reserved");
+                        seatButton.disabled = true; // 예약된 좌석은 선택 불가
+                    } else {
+                        seatButton.addEventListener("click", () =>
+                            toggleSeatSelection(seatButton)
+                        );
+                    }
+
+                    rowDiv.appendChild(seatButton);
+                }
+
+                seatContainer.appendChild(rowDiv);
+            });
+        });
+    }
+
+    // 좌석 선택 상태 관리
+    let selectedSeats = []; // 선택된 좌석 추적
+    function toggleSeatSelection(seatButton) {
+        const seat = {
+            row: seatButton.dataset.row,
+            column: seatButton.dataset.column,
+            number: seatButton.dataset.number,
+        };
+
+        if (seatButton.classList.contains("selected")) {
+            // 선택 해제
+            seatButton.classList.remove("selected");
+            selectedSeats = selectedSeats.filter(
+                (s) =>
+                    !(s.row === seat.row &&
+                        s.column === seat.column &&
+                        s.number === seat.number)
+            );
+        } else {
+            if (selectedSeats.length >= maxSelectable) {
+                alert(`최대 ${maxSelectable}개의 좌석만 선택 가능합니다.`);
+                return;
+            }
+            seatButton.classList.add("selected");
+            selectedSeats.push(seat);
+        }
+
+        console.log("현재 선택된 좌석:", selectedSeats);
+    }
+
+    // 인원 수 변경 이벤트
+    personCountInput.addEventListener("change", (event) => {
+        const count = parseInt(event.target.value, 10);
+        if (isNaN(count) || count <= 0) {
+            alert("올바른 인원 수를 입력하세요.");
+            return;
+        }
+
+        maxSelectable = count; // 선택 가능한 최대 좌석 수 설정
+        selectedSeats = []; // 선택 초기화
+        document.querySelectorAll(".seat.selected").forEach((seat) => {
+            seat.classList.remove("selected");
+        });
+    });
+
+    // 예약 버튼 클릭 이벤트
+    reserveButton.addEventListener("click", () => {
+        if (selectedSeats.length === 0) {
+            alert("좌석을 선택해주세요.");
+            return;
+        }
+
+        const totalPrice = ticketPrice * selectedSeats.length;
+        alert(`총 금액: ${totalPrice.toLocaleString()}원`);
+        // 결제 페이지로 이동하는 로직 추가 예정
+    });
+
+    await initialize("001", "2024-12-01T18:45:00", "1");
+});
+
+
+
+
+
+did, 히드라 히드라가 더 좋을거같음
+
+
+
+
+찐또
+
+CREATE TABLE `예매좌석` (
+  `영화번호` varchar(10) NOT NULL,
+  `상영시간` datetime NOT NULL,
+  `상영관번호` varchar(10) NOT NULL,
+  `열번호` varchar(5) NOT NULL,
+  `위치번호` varchar(5) NOT NULL,
+  `회원번호` varchar(10) NOT NULL,
+  `예매일시` datetime NOT NULL,
+  `금액` int NOT NULL CHECK (`금액` > 0),
+  PRIMARY KEY (`영화번호`, `상영시간`, `상영관번호`, `열번호`, `위치번호`),
+  KEY `FK_예매좌석_회원` (`회원번호`),
+  CONSTRAINT `FK_예매좌석_상영스케줄` FOREIGN KEY (`영화번호`, `상영시간`, `상영관번호`) 
+      REFERENCES `상영스케줄` (`영화번호`, `상영시간`, `상영관번호`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `FK_예매좌석_회원` FOREIGN KEY (`회원번호`) 
+      REFERENCES `회원` (`회원번호`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+
+js 바뀐 내용 뒤로가기 두번이면 됨
+ 이렇게 두개 내용임
+const seat = {
+        rowNumber: seatButton.dataset.row, // 열번호
+        seatNumber: `${seatButton.dataset.column}${seatButton.dataset.number}`, // 위치번호
+    };
+
+    if (seatButton.classList.contains("selected")) {
+        // 선택 해제
+        seatButton.classList.remove("selected");
+        selectedSeats = selectedSeats.filter(
+            (s) => !(s.rowNumber === seat.rowNumber && s.seatNumber === seat.seatNumber)
+        );
+    } else {
+        if (selectedSeats.length >= maxSelectable) {
+            alert(`최대 ${maxSelectable}개의 좌석만 선택 가능합니다.`);
+            return;
+        }
+        seatButton.classList.add("selected");
+        selectedSeats.push(seat);
+    }
+
+    console.log("현재 선택된 좌석:", selectedSeats);
+}
+
+
+ㅡㅡㅡ
+ const payload = {
+        movieId,
+        showTime,
+        theaterId,
+        amount: totalPrice,
+        seats: selectedSeats.map((seat) => ({
+            rowNumber: seat.rowNumber, // 열번호
+            seatNumber: seat.seatNumber, // 위치번호
+        })),
+    };
+
+    try {
+        // POST 요청으로 데이터 전송
+        const response = await fetch("/api/reservation", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+        });
+
+        if (!response.ok) {
+            throw new Error("서버로 데이터 전송 실패");
+        }
+
+        // 결제 페이지로 이동
+        window.location.href = "/payment";
+    } catch (error) {
+        console.error("예약 요청 중 오류 발생:", error);
+        alert("예약 요청 중 오류가 발생했습니다.");
+    }
+
+
+ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+html 에 포함되어있느느 js파일
+
+document.addEventListener("DOMContentLoaded", async function () {
+        const seatContainer = document.getElementById("seat-container");
+        let reservedSeats = []; // 서버에서 받아온 전체 좌석 데이터 저장
+        const personCountInput = document.getElementById("person-count");
+
+        let maxSelectable = 0; // 선택 가능한 최대 좌석 수
+        const reserveButton = document.getElementById("reserve-button");
+        let ticketPrice = 0; // 상영 스케줄에서 가져올 기본 요금
+
+        let theaterType; // 상영관 유형 변수
+
+        async function initialize() {
+            try {
+
+
+                // 요금 정보를 먼저 가져옵니다.
+                await fetchTicketPrice();
+                // 좌석 데이터를 가져옵니다.
+                await fetchReservedSeats();
+                // 상영관 유형 표시
+                displayTheaterType(theaterType);
+            } catch (error) {
+                console.error("초기화 중 오류 발생:", error);
+            }
+        }
+
+        // 서버에서 예약된 좌석 데이터를 가져오기
+        async function fetchReservedSeats() {
+            try {
+                const url = `http://localhost:8080/seats?movieId=${movieId}&showTime=${showTime}&theaterId=${theaterId}`;
+
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`서버로부터 데이터를 가져오는 데 실패했습니다: ${response.status}`);
+                }
+
+                reservedSeats = await response.json(); // JSON 데이터를 파싱
+                console.log("받아온 좌석 데이터:", reservedSeats);
+                createSeats(theaterId); // 좌석 생성
+
+                theaterType = getTheaterType(theaterId); // 상영관 유형 저장
+
+            } catch (error) {
+                console.error("좌석 데이터를 가져오는 중 오류 발생:", error);
+            }
+        }
+
+        // 상영 스케줄에서 요금 정보 가져오기
+        async function fetchTicketPrice() {
+            try {
+                const url = `http://localhost:8080/schedule?movieId=${movieId}&showTime=${showTime}&theaterId=${theaterId}`;
+
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`요금 정보를 가져오는 데 실패했습니다: ${response.status}`);
+                }
+
+                const schedule = await response.json();
+                ticketPrice = schedule.price; // 요금을 저장
+
+                console.log("상영 요금:", ticketPrice);
+            } catch (error) {
+                console.error("요금 정보를 가져오는 중 오류 발생:", error);
+            }
+        }
+
+        // 상영관 유형 매핑 함수
+        function getTheaterType(theaterId) {
+            switch (theaterId) {
+                case "1":
+                    return "2D";
+                case "2":
+                    return "3D";
+                case "3":
+                    return "X-SCREEN";
+                default:
+                    return "알 수 없음";
+            }
+        }
+
+        // 상영관 유형 표시 함수
+        function displayTheaterType(type) {
+            const theaterTypeElement = document.getElementById("theater-type");
+            if (theaterTypeElement) {
+                theaterTypeElement.textContent = `상영관 유형: ${type}`;
+            } else {
+                console.error("상영관 유형 표시 요소가 없습니다.");
+            }
+        }
+
+        // 영화관 유형 및 좌석 배열 생성
+        function createSeats(theaterId) {
+            seatContainer.innerHTML = ""; // 기존 좌석 초기화
+            let rows = [];
+            let columns = [];
+            let colCount = 0;
+
+            // 상영관에 따른 좌석 배열 정의
+            switch (theaterId) {
+                case "1": // 1관: A, B 열, 10x3 배열
+                    rows = ["A", "B"];
+                    columns = ["a", "b", "c"];
+                    colCount = 10;
+                    break;
+                case "2": // 2관: A, B, C 열, 10x2 배열
+                    rows = ["A", "B", "C"];
+                    columns = ["a", "b"];
+                    colCount = 10;
+                    break;
+                case "3": // 3관: A, B 열, 8x3 배열
+                    rows = ["A", "B"];
+                    columns = ["a", "b", "c"];
+                    colCount = 8;
+                    break;
+                default:
+                    alert("잘못된 상영관 번호입니다.");
+                    return;
+            }
+
+            // 좌석 UI 생성
+            rows.forEach((row) => {
+                columns.forEach((column) => {
+                    const rowDiv = document.createElement("div");
+                    rowDiv.classList.add("seat-row");
+                    rowDiv.textContent = `${row}열 ${column}: `;
+
+                    for (let i = 1; i <= colCount; i++) {
+                        const seatId = `${column}${i}`;
+                        const seatButton = document.createElement("button");
+                        seatButton.textContent = i; // 좌석 번호
+                        seatButton.classList.add("seat");
+                        seatButton.dataset.row = row;
+                        seatButton.dataset.column = column;
+                        seatButton.dataset.number = i;
+
+                        // 예약된 좌석인지 확인
+                        const isReserved = reservedSeats.some(
+                            (seat) =>
+                                seat.rowNumber === row &&
+                                seat.seatNumber === seatId &&
+                                seat.reserved
+                        );
+
+                        if (isReserved) {
+                            seatButton.classList.add("reserved");
+                            seatButton.disabled = true; // 예약된 좌석은 선택 불가
+                        } else {
+                            seatButton.addEventListener("click", () =>
+                                toggleSeatSelection(seatButton)
+                            );
+                        }
+
+                        rowDiv.appendChild(seatButton);
+                    }
+
+                    seatContainer.appendChild(rowDiv);
+                });
+            });
+        }
+
+        // 좌석 선택 상태 관리
+        let selectedSeats = []; // 선택된 좌석 추적
+        function toggleSeatSelection(seatButton) {
+            const seat = {
+                row: seatButton.dataset.row,
+                column: seatButton.dataset.column,
+                number: seatButton.dataset.number,
+            };
+
+            if (seatButton.classList.contains("selected")) {
+                // 선택 해제
+                seatButton.classList.remove("selected");
+                selectedSeats = selectedSeats.filter(
+                    (s) =>
+                        !(s.row === seat.row &&
+                            s.column === seat.column &&
+                            s.number === seat.number)
+                );
+            } else {
+                if (selectedSeats.length >= maxSelectable) {
+                    alert(`최대 ${maxSelectable}개의 좌석만 선택 가능합니다.`);
+                    return;
+                }
+                seatButton.classList.add("selected");
+                selectedSeats.push(seat);
+            }
+
+            console.log("현재 선택된 좌석:", selectedSeats);
+        }
+
+        // 인원 수 변경 이벤트
+        personCountInput.addEventListener("change", (event) => {
+            const count = parseInt(event.target.value, 10);
+            if (isNaN(count) || count <= 0) {
+                alert("올바른 인원 수를 입력하세요.");
+                return;
+            }
+
+            maxSelectable = count; // 선택 가능한 최대 좌석 수 설정
+            selectedSeats = []; // 선택 초기화
+            document.querySelectorAll(".seat.selected").forEach((seat) => {
+                seat.classList.remove("selected");
+            });
+        });
+
+        // 예약 버튼 클릭 이벤트
+        reserveButton.addEventListener("click", () => {
+            if (selectedSeats.length === 0) {
+                alert("좌석을 선택해주세요.");
+                return;
+            }
+
+            const totalPrice = ticketPrice * selectedSeats.length;
+            alert(`총 금액: ${totalPrice.toLocaleString()}원`);
+            // 결제 페이지로 이동하는 로직 추가 예정
+        });
+
+        await initialize();
+    });

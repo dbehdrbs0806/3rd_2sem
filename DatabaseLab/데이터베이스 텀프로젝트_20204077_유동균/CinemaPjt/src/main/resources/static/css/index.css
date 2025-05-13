@@ -1,0 +1,110 @@
+/* 기본 설정 */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+    background-color: #e8f5e9; /* 연한 초록색 배경 */
+    color: #2e7d32; /* 진한 초록색 텍스트 */
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #43a047; /* 상단바 초록색 */
+    color: white;
+    padding: 10px 20px;
+}
+
+/* 홈페이지 이름 */
+.website-name {
+    font-size: 2rem;
+    font-weight: bold;
+    margin: 0;
+}
+
+/* 로그인 박스 */
+.login-box {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+    width: 250px;
+}
+
+.login-box h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #2e7d32;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.login-box form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.login-box label {
+    font-size: 0.9rem;
+    color: #2e7d32;
+}
+
+.login-box input {
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.login-box button {
+    padding: 10px;
+    background-color: #2e7d32;
+    color: white;
+    font-size: 1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.login-box button:hover {
+    background-color: #1b5e20;
+}
+
+.signup-link {
+    margin-top: 10px;
+    text-align: center;
+}
+
+.signup-link a {
+    text-decoration: none;
+    color: #2e7d32;
+    font-weight: bold;
+}
+
+.signup-link a:hover {
+    color: #1b5e20;
+}
+
+/* 메인 콘텐츠 */
+main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: calc(100vh - 80px); /* 상단바를 제외한 높이 */
+}
+
+.welcome-section {
+    text-align: center;
+}
+
+.welcome-section h1 {
+    font-size: 3rem;
+    color: #2e7d32;
+}
+
+.welcome-section p {
+    font-size: 1.5rem;
+    color: #43a047;
+}
